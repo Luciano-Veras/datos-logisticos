@@ -1,0 +1,6 @@
+{
+  "name": "Catálogo Logístico B2B",
+  "description": "Catálogo B2B de datos logísticos con SQLite WASM en memoria, búsqueda en tiempo real, detalles de empaque y exportación Excel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
