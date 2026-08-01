@@ -102,6 +102,19 @@
       <p class="text-xs text-gray-500">
         Arrastra y suelta tu archivo <code class="bg-gray-100 px-1.5 py-0.5 rounded text-[#005696] font-mono">datos_logisticos.db</code> o selecciona desde tu equipo.
       </p>
+      
+      <details class="text-xs text-gray-600 bg-white rounded-lg border border-gray-200 mt-3 text-left">
+        <summary class="cursor-pointer font-semibold px-4 py-2 hover:bg-gray-50 flex items-center gap-2 rounded-lg transition-colors">
+          <i class="fa-solid fa-circle-info text-[#005696]"></i>
+          Ver estructura requerida
+        </summary>
+        <div class="p-3 border-t border-gray-200 space-y-2">
+          <p>Tabla <code class="bg-gray-100 px-1 py-0.5 rounded font-mono">productos</code>. Columnas necesarias:</p>
+          <p class="text-[11px] font-mono text-gray-500 break-words leading-relaxed">
+            id, sku, nombre, peso_unidad, cantidad_caja, vencimiento, largo_caja, ancho_caja, alto_caja, peso_caja, ean13, dun14, cajas_base, altura_pallet, cajas_pallet
+          </p>
+        </div>
+      </details>
     </div>
     <div class="flex justify-center items-center gap-3">
       <label class="cursor-pointer px-4 py-2 bg-[#005696] hover:bg-[#004a82] text-white font-semibold text-xs rounded-lg shadow-xs transition-all">
@@ -205,6 +218,33 @@
         <p class="text-xs text-gray-600">
           Puedes arrastrar tu propio archivo <code class="bg-gray-100 px-1 py-0.5 rounded text-[#005696] font-mono">datos_logisticos.db</code> para cargarlo en la memoria local.
         </p>
+
+        <details class="text-xs text-gray-600 bg-gray-50 rounded-lg border border-gray-200">
+          <summary class="cursor-pointer font-semibold px-4 py-2.5 hover:bg-gray-100 flex items-center gap-2 rounded-lg transition-colors">
+            <i class="fa-solid fa-circle-info text-[#005696]"></i>
+            Ver requisitos de estructura (DB Schema)
+          </summary>
+          <div class="p-4 border-t border-gray-200 space-y-2 max-h-48 overflow-y-auto">
+            <p>Debe existir una tabla llamada <code class="bg-gray-200 px-1 py-0.5 rounded text-gray-800 font-mono">productos</code> con las siguientes columnas:</p>
+            <ul class="list-disc pl-5 space-y-1 text-[11px] font-mono text-gray-500">
+              <li><b class="text-gray-700">id</b> INTEGER PRIMARY KEY</li>
+              <li><b class="text-gray-700">sku</b> TEXT UNIQUE</li>
+              <li><b class="text-gray-700">nombre</b> TEXT</li>
+              <li><b class="text-gray-700">peso_unidad</b> REAL</li>
+              <li><b class="text-gray-700">cantidad_caja</b> INTEGER</li>
+              <li><b class="text-gray-700">vencimiento</b> TEXT</li>
+              <li><b class="text-gray-700">largo_caja</b> REAL</li>
+              <li><b class="text-gray-700">ancho_caja</b> REAL</li>
+              <li><b class="text-gray-700">alto_caja</b> REAL</li>
+              <li><b class="text-gray-700">peso_caja</b> REAL</li>
+              <li><b class="text-gray-700">ean13</b> TEXT</li>
+              <li><b class="text-gray-700">dun14</b> TEXT</li>
+              <li><b class="text-gray-700">cajas_base</b> INTEGER</li>
+              <li><b class="text-gray-700">altura_pallet</b> INTEGER</li>
+              <li><b class="text-gray-700">cajas_pallet</b> INTEGER</li>
+            </ul>
+          </div>
+        </details>
 
         <div id="modal-drop-zone" class="border-2 border-dashed border-[#005696]/30 bg-blue-50/40 hover:bg-blue-50 rounded-xl p-6 text-center space-y-2 transition-colors cursor-pointer">
           <i class="fa-solid fa-cloud-arrow-up text-2xl text-[#005696]"></i>
