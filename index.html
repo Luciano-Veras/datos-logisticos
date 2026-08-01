@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full bg-[#F9FAFB]">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Catálogo Logístico B2B - Bento Grid</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+
+  <!-- FontAwesome 6.5.1 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <!-- SQLite WASM (sql.js CDN) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.js"></script>
+
+  <!-- SheetJS (XLSX Export CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <script type="module" crossorigin src="/datos-logisticos/assets/index-JOrMdB5D.js"></script>
+  <link rel="stylesheet" crossorigin href="/datos-logisticos/assets/index-B0Xo-6J1.css">
+</head>
+<body class="h-full font-sans text-gray-800 bg-[#F9FAFB] antialiased flex flex-col min-h-screen">
+
+  <!-- Institutional Header (Bento Grid Style) -->
+  <header class="h-20 bg-white border-b border-gray-200 sticky top-0 z-30 shadow-xs">
+  <div class="max-w-[1536px] mx-auto w-full h-full flex items-center justify-between px-4 sm:px-8 shrink-0">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 bg-[#005696] rounded-lg flex items-center justify-center shadow-xs text-white shrink-0">
+        <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current">
+          <path d="M21 16.5c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.991.991 0 0 1 3 16.5v-9c0-.38.21-.71.53-.88l7.9-4.44c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.32.17.53.5.53.88v9zM12 4.15L6.04 7.5 12 10.85l5.96-3.35L12 4.15z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="text-lg sm:text-xl font-bold text-[#005696] tracking-tight flex items-center flex-wrap gap-1">
+          <span>Catálogo de Productos</span> 
+          <span class="font-normal text-gray-300 mx-1">|</span> 
+          <span class="text-gray-600 font-medium">Datos Logísticos</span>
+        </h1>
+        <p class="text-xs text-gray-500 hidden sm:block">Plataforma B2B para Gestión de Empaque, Pesos y Estiba</p>
+      </div>
+    </div>
+
+    <!-- Header Actions -->
+    <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Export to Excel -->
+      <button id="btn-export-excel" class="flex items-center gap-2 px-3.5 py-2 bg-green-600 text-white rounded-md text-xs sm:text-sm font-semibold hover:bg-green-700 transition-colors shadow-xs cursor-pointer">
+        <i class="fa-solid fa-file-excel text-base"></i>
+        <span class="hidden md:inline">Exportar a Excel</span>
+      </button>
+
+      
+
+      <!-- Manage DB Actions -->
+      <div class="hidden lg:flex items-center gap-1.5 border-l border-gray-200 pl-3">
+        <button id="btn-download-db" class="p-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-md border border-gray-200 text-xs font-medium transition-colors cursor-pointer" title="Guardar/Descargar DB SQLite">
+          <i class="fa-solid fa-floppy-disk text-gray-600"></i>
+        </button>
+        <button id="btn-open-db-modal" class="p-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-md border border-gray-200 text-xs font-medium transition-colors cursor-pointer" title="Cargar DB externa">
+          <i class="fa-solid fa-upload text-gray-600"></i>
+        </button>
+      </div>
+    </div>
+    </div>
+</header>
+
+  <!-- Action Bar & Search -->
+  <div class="px-4 sm:px-8 py-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 bg-white/60 border-b border-gray-200/80 shrink-0">
+    <div class="relative w-full sm:w-96">
+      <span class="absolute left-3.5 top-2.5 text-gray-400 text-sm">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </span>
+      <input 
+        type="text" 
+        id="search-input" 
+        placeholder="Buscar por SKU o Nombre de Producto..." 
+        class="w-full pl-10 pr-10 py-2 bg-white border border-gray-200 rounded-lg shadow-xs focus:outline-none focus:ring-2 focus:ring-[#005696] focus:border-transparent text-sm"
+      />
+      <button id="clear-search-btn" class="hidden absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+        <i class="fa-solid fa-xmark text-sm"></i>
+      </button>
+    </div>
+
+    <div class="text-xs sm:text-sm text-gray-500 flex items-center justify-between sm:justify-end gap-3">
+      <div>
+        Mostrando <span class="font-semibold text-gray-800" id="count-number">0</span> productos en base de datos local
+      </div>
+      <div class="font-mono text-[11px] bg-gray-200/60 px-2 py-0.5 rounded text-gray-600 hidden md:block">
+        SQLite: <span id="badge-total-sku">0</span> SKU
+      </div>
+    </div>
+  </div>
+
+  <!-- Fallback Drag & Drop Zone if fetch fails -->
+  <div id="drag-drop-fallback" class="hidden mx-4 sm:mx-8 my-4 bg-white rounded-xl shadow-xs border-2 border-dashed border-[#005696]/30 p-8 text-center space-y-4">
+    <div class="w-16 h-16 bg-blue-50 text-[#005696] rounded-full flex items-center justify-center mx-auto text-2xl">
+      <i class="fa-solid fa-file-arrow-up"></i>
+    </div>
+    <div class="max-w-md mx-auto space-y-1">
+      <h3 class="text-base font-bold text-gray-800">Cargar Base de Datos SQLite (.db)</h3>
+      <p class="text-xs text-gray-500">
+        Arrastra y suelta tu archivo <code class="bg-gray-100 px-1.5 py-0.5 rounded text-[#005696] font-mono">datos_logisticos.db</code> o selecciona desde tu equipo.
+      </p>
+    </div>
+    <div class="flex justify-center items-center gap-3">
+      <label class="cursor-pointer px-4 py-2 bg-[#005696] hover:bg-[#004a82] text-white font-semibold text-xs rounded-lg shadow-xs transition-all">
+        <span>Seleccionar Archivo .db</span>
+        <input type="file" id="db-file-input" accept=".db,.sqlite,.sqlite3" class="hidden" />
+      </label>
+      <button id="btn-load-sample" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold text-xs rounded-lg border border-gray-300 transition-all">
+        Cargar Datos de Ejemplo
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content Area -->
+  <main class="flex-1 w-full max-w-[1536px] mx-auto px-4 sm:px-8 py-6 flex flex-col gap-6">
+    
+    <!-- Master Table -->
+    <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex flex-col">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead class="hidden md:table-header-group">
+            <tr class="bg-[#005696] text-white text-sm uppercase tracking-wider">
+              <th scope="col" class="px-6 py-4 font-semibold w-12 text-center">#</th>
+              <th scope="col" class="px-6 py-4 font-semibold min-w-[120px] cursor-pointer hover:bg-[#004a82]" onclick="sortTable('sku')">
+                <div class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-barcode text-blue-200 text-xs"></i>
+                  <span>SKU</span>
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-4 font-semibold min-w-[220px] cursor-pointer hover:bg-[#004a82]" onclick="sortTable('nombre')">
+                <div class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-box-open text-blue-200 text-xs"></i>
+                  <span>Producto</span>
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-4 font-semibold text-center min-w-[120px] cursor-pointer hover:bg-[#004a82]" onclick="sortTable('peso_unidad')">
+                <div class="flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-scale-balanced text-blue-200 text-xs"></i>
+                  <span>Peso Unit.</span>
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-4 font-semibold text-center min-w-[120px] cursor-pointer hover:bg-[#004a82]" onclick="sortTable('cantidad_caja')">
+                <div class="flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-boxes-stacked text-blue-200 text-xs"></i>
+                  <span>Cdad. Caja</span>
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-4 font-semibold text-center min-w-[120px] cursor-pointer hover:bg-[#004a82]" onclick="sortTable('vencimiento')">
+                <div class="flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-calendar-days text-blue-200 text-xs"></i>
+                  <span>Vencimiento</span>
+                </div>
+              </th>
+              <th scope="col" class="px-6 py-4 font-semibold text-right w-28">Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="table-body" class="text-sm divide-y divide-gray-100">
+            <!-- Renderizado dinámico desde SQLite -->
+            <tr>
+              <td colspan="7" class="px-6 py-12 text-center text-gray-400">
+                <div class="flex flex-col items-center justify-center space-y-2">
+                  <i class="fa-solid fa-spinner fa-spin text-2xl text-[#005696]"></i>
+                  <span class="text-xs font-medium text-gray-600">Cargando base de datos logísticos...</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Status Info / Connection Footer Block -->
+    <div class="mt-auto flex items-center gap-3 p-4 bg-blue-50 border border-blue-100 rounded-lg shadow-2xs">
+      <div class="w-8 h-8 bg-[#005696] rounded flex items-center justify-center text-white text-xs shrink-0">
+        🗄️
+      </div>
+      <div class="text-xs">
+        <p class="font-bold text-[#005696]">Estado de Conexión</p>
+        <p class="text-gray-600 italic">SQLite WASM activo. Archivo <code class="bg-blue-100/60 px-1 py-0.2 rounded font-mono text-gray-700">datos_logisticos.db</code> cargado en memoria RAM.</p>
+      </div>
+      <div class="ml-auto text-[10px] font-mono text-gray-400 uppercase hidden sm:block">
+        Bento Grid B2B • GitHub Pages Ready
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Modal: Cargar Base de Datos Manual -->
+  <div id="db-modal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-xl border border-gray-200 max-w-md w-full overflow-hidden p-6 space-y-4">
+      <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+        <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
+          <i class="fa-solid fa-database text-[#005696]"></i>
+          Gestionar Base de Datos SQLite
+        </h3>
+        <button id="btn-close-db-modal" class="text-gray-400 hover:text-gray-600">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <p class="text-xs text-gray-600">
+          Puedes arrastrar tu propio archivo <code class="bg-gray-100 px-1 py-0.5 rounded text-[#005696] font-mono">datos_logisticos.db</code> para cargarlo en la memoria local.
+        </p>
+
+        <div id="modal-drop-zone" class="border-2 border-dashed border-[#005696]/30 bg-blue-50/40 hover:bg-blue-50 rounded-xl p-6 text-center space-y-2 transition-colors cursor-pointer">
+          <i class="fa-solid fa-cloud-arrow-up text-2xl text-[#005696]"></i>
+          <p class="text-xs font-bold text-gray-700">Arrastra tu archivo .db aquí</p>
+          <p class="text-[11px] text-gray-400">o haz clic para explorar tu dispositivo</p>
+          <input type="file" id="modal-file-input" accept=".db,.sqlite,.sqlite3" class="hidden" />
+        </div>
+
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-gray-200"></div>
+          <span class="flex-shrink mx-3 text-[10px] uppercase font-bold text-gray-400">O bien</span>
+          <div class="flex-grow border-t border-gray-200"></div>
+        </div>
+
+        <button id="btn-modal-load-sample" class="w-full py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold text-xs rounded-lg border border-gray-300 flex items-center justify-center gap-2 transition-colors">
+          <i class="fa-solid fa-rotate-left text-gray-500"></i>
+          Restablecer Catálogo de Ejemplo
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col space-y-2 pointer-events-none"></div>
+
+  <!-- Application Logic JavaScript -->
+</body>
+</html>
